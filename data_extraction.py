@@ -20,6 +20,7 @@ import pprint
 import json
 # s3
 import boto3
+import datetime
 
 class DatabaseConnector():
     
@@ -151,8 +152,8 @@ conn = DatabaseConnector(filename = 'db_creds.yaml')
 # ex.orders_table.drop(labels=['first_name','last_name','1'], axis= 1)
 # ex.date_details['month'].value_counts()
 # ex.date_details['timestamp'].info()
-# ex.date_details.info()
-
+# ex.date_details['year'] + ex.date_details['month'] + ex.date_details['day'] + ex.date_details['timestamp'] 
+# ex.date_details['timestamp']
 
 class DataCleaning(DataExtractor):
 
@@ -332,9 +333,10 @@ class DataCleaning(DataExtractor):
         # day
         self.date_details['day'] = self.date_details['day'].str.zfill(2)
         # calendar
-        self.date_details['date'] = (self.date_details['year']+ self.date_details['month'] + self.date_details['day'])
-        self.date_details['date'].apply(pd.to_datetime, errors= 'coerce')
-        self.date_details['date'] = self.date_details['date'].astype('datetime64')
+        self.date_details['date'] = pd.to_datetime(self.date_details['year'] + \
+                                                   self.date_details['month'] + \
+                                                    self.date_details['day'] + \
+                                                        self.date_details['timestamp'].str.replace(':',''))
         # day_name
         self.date_details['day_name'] = self.date_details['date'].dt.day_name()
         # time_period
@@ -376,16 +378,17 @@ sys.setrecursionlimit(15000)
 # check = (sample.s3['product_code']=='Q1-1813216e')
 # sample.s3.loc[check]
 
-
 # sample.clean_orders_data()
 # sample.orders_table['product_quantity'].value_counts()
 # sample.orders_table.info()
 # sample.orders_table['date_uuid'].duplicated().sum()
 # order = sample.orders_table
 # sample.clean_date_details()
+# sample.date_details.info()
 # date = sample.date_details
 # sample.date_details['month'].value_counts()
 # sample.date_details['month'].unique()
+
 
 # DATABASE_TYPE = 'postgresql'
 # DBAPI = 'psycopg2'

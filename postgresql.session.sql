@@ -147,8 +147,9 @@ CREATE TABLE dim_date_times_new_type (
     year CHAR(4),
     day CHAR(2),
     time_period VARCHAR(10),
-    date_uuid UUID
-)
+    date_uuid UUID,
+    date TIMESTAMP
+);
 --INSERT
 INSERT INTO dim_date_times_new_type (
     timestamp,
@@ -156,7 +157,8 @@ INSERT INTO dim_date_times_new_type (
     year,
     day,
     time_period,
-    date_uuid
+    date_uuid,
+    date
 )
 SELECT
     CAST(timestamp AS TEXT),
@@ -165,7 +167,9 @@ SELECT
     CAST(day AS CHAR(2)),
 	CAST(time_period AS VARCHAR(10)),
 	CAST(date_uuid AS UUID)
+    CAST(date AS TIMESTAMP)
 FROM dim_date_times
+
 
 
 -- dim_card_details-------------------------------------------
@@ -378,37 +382,6 @@ ORDER BY TOTAL_SALES DESC;
 
 
 --SALES
-SELECT 
-total_sales,
-year,
-month
-FROM  (
-    SELECT 
-     ROW_NUMBER() OVER(PARTITION BY month ORDER BY total_sales DESC) AS rank,
-    total_sales,
-    year,
-    month
-    FROM (
-        SELECT 
-        TRUNC(SUM(od.product_quantity*pro.product_price)) AS total_sales,
-        dt.year AS year,
-        dt.month AS month
-        FROM
-        dim_products_new_type AS pro
-        LEFT JOIN orders_table_new_type AS od
-        ON od.product_code = pro.product_code
-        LEFT JOIN dim_date_times_new_type AS dt
-        ON od.date_uuid = dt.date_uuid
-        GROUP BY 
-        dt.year, 
-        dt.month
-        ORDER BY total_sales DESC) AS sub
-GROUP BY 
-        dt.year,
-        dt.month) AS sub2
-WHERE sub2.rank = 1 ;
-
-
 WITH sales_by_month AS (
     SELECT 
         TRUNC(SUM(od.product_quantity*pro.product_price)) AS total_sales,
@@ -479,16 +452,15 @@ total_sales;
 ---Task 9
 WITH making_sale AS (
     SELECT 
-    year,
-    TO_TIMESTAMP(timestamp, 'HH24:MI:SS') AS sale_timestamp,
-    LEAD(TO_TIMESTAMP(timestamp, 'HH24:MI:SS')) OVER(PARTITION BY year ORDER BY timestamp) AS sale_timestamp_next
+    DATE_TRUNC('year', date) AS year,
+    TO_TIMESTAMP(TO_CHAR(date, 'YYYY-MM-DD HH24:MI:SS'), 'YYYY-MM-DD HH24:MI:SS')AS sale_timestamp,
+    LEAD(TO_TIMESTAMP(TO_CHAR(date, 'YYYY-MM-DD HH24:MI:SS'),'YYYY-MM-DD HH24:MI:SS')) OVER(PARTITION BY DATE_TRUNC('year', date) ORDER BY date) AS sale_timestamp_next
     FROM dim_date_times_new_type
 )
 SELECT 
 year,
-AVG(sale_timestamp_next - sale_timestamp) AS avg_time_diff
+AVG(sale_timestamp_next - sale_timestamp) AS actual_time_taken
 FROM making_sale
-GROUP BY year;
-
-
+GROUP BY year
+ORDER BY actual_time_taken DESC LIMIT 5;
 
