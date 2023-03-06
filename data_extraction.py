@@ -127,36 +127,31 @@ class DataExtractor(DatabaseConnector):
         return self.date_details
 
 
-
-
 conn = DatabaseConnector(filename = 'db_creds.yaml')
 
 
-
-
-
-ex = DataExtractor(filename = 'db_creds.yaml')
-ex.retrieve_pdf_data()
-ex.pdf_data
-ex.list_table
-ex.read_rds_table()
-ex.retrieve_stores_data()
-ex.df.head()
-ex.df.loc[0,'address'] = 0
-ex.df.loc[0,'latitude'] = 0
-ex.df.loc[0,'longitude'] = 0
-ex.df.loc[0,'locality'] = 'web'
-ex.df
-ex.df.isnull().sum()
-ex.df['store_type'].value_counts()
-pd.set_option('display.max_rows',1000)
-pd.set_option('display.max_column',1000)
-ex.df['store_type'].value_counts()
-ex.products_df["EAN"]
-ex.orders_table.drop(labels=['first_name','last_name','1'], axis= 1)
-ex.date_details['month'].value_counts()
-ex.date_details['timestamp'].info()
-ex.date_details.info()
+# ex = DataExtractor(filename = 'db_creds.yaml')
+# ex.retrieve_pdf_data()
+# ex.pdf_data
+# ex.list_table
+# ex.read_rds_table()
+# ex.retrieve_stores_data()
+# ex.df.head()
+# ex.df.loc[0,'address'] = 0
+# ex.df.loc[0,'latitude'] = 0
+# ex.df.loc[0,'longitude'] = 0
+# ex.df.loc[0,'locality'] = 'web'
+# ex.df
+# ex.df.isnull().sum()
+# ex.df['store_type'].value_counts()
+# pd.set_option('display.max_rows',1000)
+# pd.set_option('display.max_column',1000)
+# ex.df['store_type'].value_counts()
+# ex.products_df["EAN"]
+# ex.orders_table.drop(labels=['first_name','last_name','1'], axis= 1)
+# ex.date_details['month'].value_counts()
+# ex.date_details['timestamp'].info()
+# ex.date_details.info()
 
 
 class DataCleaning(DataExtractor):
@@ -352,60 +347,59 @@ class DataCleaning(DataExtractor):
 import sys
 sys.setrecursionlimit(15000)
 
-sample = DataCleaning(filename = 'db_creds.yaml')
-sample.clean_user_data()
-legacy_users= sample.legacy_users
-legacy_users.info()
-pdf_data = sample.pdf_data
-pdf_data.info()
-sample.called_clean_store_data()
-sample.store_data.head()
-sample.store_data['opening_date']
+# sample = DataCleaning(filename = 'db_creds.yaml')
+# sample.clean_user_data()
+# legacy_users= sample.legacy_users
+# legacy_users.info()
+# pdf_data = sample.pdf_data
+# pdf_data.info()
+# sample.called_clean_store_data()
+# sample.store_data.head()
+# sample.store_data['opening_date']
 
-store_data = sample.store_data
+# store_data = sample.store_data
 # store_data['opening_date'] = pd.to_datetime(store_data['opening_date'],errors= 'coerce')
-store_data.info()
+# store_data.info()
 # sample.s3['product_name'].drop_duplicates(inplace=True)
-sample.add_new_weight()
-sample.clean_products_data()
-sample.s3.shape
+# sample.add_new_weight()
+# sample.clean_products_data()
+# sample.s3.shape
 # sample.s3['product_name'].drop_duplicates(inplace=True)
 # sample.s3['product_name'].duplicated().sum()
 # sample.s3.drop('Unnamed: 0', axis= 1, inplace=True)
 # procheck = sample.s3['product_name'].duplicated()
 # sample.s3 = sample.s3.loc[~procheck]
-product = sample.s3
-product['product_code'].duplicated().sum()
+# product = sample.s3
+# product['product_code'].duplicated().sum()
 # sample.s3['removed'] = sample.s3['removed'].map({'Still_avaliable':True, 'Removed':False })
 # sample.s3.reset_index().drop('index', axis= 1, inplace=True)
 # check = (sample.s3['product_code']=='Q1-1813216e')
 # sample.s3.loc[check]
 
 
-sample.clean_orders_data()
-sample.orders_table['product_quantity'].value_counts()
-sample.orders_table.info()
-sample.orders_table['date_uuid'].duplicated().sum()
-order.drop('level_0', axis= 1, inplace= True)
-order.info()
-sample.clean_date_details()
-date = sample.date_details
-sample.date_details['month'].value_counts()
-sample.date_details['month'].unique()
+# sample.clean_orders_data()
+# sample.orders_table['product_quantity'].value_counts()
+# sample.orders_table.info()
+# sample.orders_table['date_uuid'].duplicated().sum()
+# order = sample.orders_table
+# sample.clean_date_details()
+# date = sample.date_details
+# sample.date_details['month'].value_counts()
+# sample.date_details['month'].unique()
 
-DATABASE_TYPE = 'postgresql'
-DBAPI = 'psycopg2'
-HOST = 'localhost'
-USER = 'postgres'
-PASSWORD = 'zbflxhsktmrkdkfn'
-DATABASE = 'Sales_Data'
-PORT = 5432
-engine_Sales_Data = create_engine(f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
-engine_Sales_Data.connect()
-legacy_users.to_sql('dim_user', engine_Sales_Data, if_exists='replace')
-pdf_data.to_sql('dim_card_details', engine_Sales_Data, if_exists='replace')
-store_data.to_sql('dim_store_details', engine_Sales_Data, if_exists='replace')
-product.to_sql('dim_products', engine_Sales_Data, if_exists='replace')
-order.to_sql('orders_table', engine_Sales_Data, if_exists='replace')
-date.to_sql('dim_date_times', engine_Sales_Data, if_exists='replace')
+# DATABASE_TYPE = 'postgresql'
+# DBAPI = 'psycopg2'
+# HOST = 'localhost'
+# USER = 'postgres'
+# PASSWORD = 'zbflxhsktmrkdkfn'
+# DATABASE = 'Sales_Data'
+# PORT = 5432
+# engine_Sales_Data = create_engine(f"{DATABASE_TYPE}+{DBAPI}://{USER}:{PASSWORD}@{HOST}:{PORT}/{DATABASE}")
+# engine_Sales_Data.connect()
+# legacy_users.to_sql('dim_user', engine_Sales_Data, if_exists='replace')
+# pdf_data.to_sql('dim_card_details', engine_Sales_Data, if_exists='replace')
+# store_data.to_sql('dim_store_details', engine_Sales_Data, if_exists='replace')
+# product.to_sql('dim_products', engine_Sales_Data, if_exists='replace')
+# order.to_sql('orders_table', engine_Sales_Data, if_exists='replace')
+# date.to_sql('dim_date_times', engine_Sales_Data, if_exists='replace')
 
